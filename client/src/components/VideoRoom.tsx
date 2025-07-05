@@ -83,7 +83,7 @@ const VideoRoom = () => {
 
   // Initialize WebSocket connection
   const connectWebSocket = () => {
-    const ws = new WebSocket('ws://localhost:3001');
+    const ws = new WebSocket(import.meta.env.VITE_WS_URL);
     
     ws.onopen = () => {
       console.log('WebSocket connected');
