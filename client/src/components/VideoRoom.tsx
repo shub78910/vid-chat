@@ -24,6 +24,8 @@ const VideoRoom = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(false);
   const [hasReceivedOffer, setHasReceivedOffer] = useState(false);
+  const [callEnded, setCallEnded] = useState(false);
+  const [isRemoteVideoOff, setIsRemoteVideoOff] = useState(false);
   
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
@@ -60,9 +62,10 @@ const VideoRoom = () => {
       if (pc.connectionState === 'connected') {
         setIsConnected(true);
         setIsConnecting(false);
-      } else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+      } else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed' || pc.connectionState === 'closed') {
         setIsConnected(false);
         setRemoteStream(null);
+        setCallEnded(true);
       }
     };
 
@@ -279,6 +282,35 @@ const VideoRoom = () => {
   }, []);
 
   useEffect(() => {
+    if (remoteStream) {
+      const videoTrack = remoteStream.getVideoTracks()[0];
+      if (videoTrack) {
+        // Set initial state
+        setIsRemoteVideoOff(!videoTrack.enabled || videoTrack.readyState === 'ended');
+        // Handler for track state changes
+        const handleTrackChange = () => {
+          setIsRemoteVideoOff(!videoTrack.enabled || videoTrack.readyState === 'ended');
+        };
+        videoTrack.addEventListener('ended', handleTrackChange);
+        videoTrack.addEventListener('mute', handleTrackChange);
+        videoTrack.addEventListener('unmute', handleTrackChange);
+        videoTrack.addEventListener('enabled', handleTrackChange);
+        // Cleanup
+        return () => {
+          videoTrack.removeEventListener('ended', handleTrackChange);
+          videoTrack.removeEventListener('mute', handleTrackChange);
+          videoTrack.removeEventListener('unmute', handleTrackChange);
+          videoTrack.removeEventListener('enabled', handleTrackChange);
+        };
+      } else {
+        setIsRemoteVideoOff(true);
+      }
+    } else {
+      setIsRemoteVideoOff(true);
+    }
+  }, [remoteStream]);
+
+  useEffect(() => {
     if (remoteVideoRef.current && remoteStream) {
       remoteVideoRef.current.srcObject = remoteStream;
     }
@@ -286,6 +318,23 @@ const VideoRoom = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 flex flex-col">
+      {/* Call Ended Overlay */}
+      {callEnded && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-80">
+          <div className="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center">
+            <span className="text-5xl mb-4">📞</span>
+            <h2 className="text-2xl font-bold mb-2 text-gray-800">Call Ended</h2>
+            <p className="text-gray-600 mb-6">The other user has left or the connection was lost.</p>
+            <button
+              onClick={() => navigate('/')}
+              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
+            >
+              Return to Home
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="bg-gray-800 p-4 flex items-center justify-between">
         <div className="flex items-center space-x-4">
@@ -324,6 +373,16 @@ const VideoRoom = () => {
               playsInline
               className="w-full h-full min-h-[600px] max-h-[350px] object-cover transform -scale-x-100"
             />
+            {isRemoteVideoOff && (
+              <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-80">
+                <div className="flex flex-col items-center">
+                  <div className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center mb-4">
+                    <span className="text-5xl text-gray-500">👤</span>
+                  </div>
+                  <p className="text-lg text-gray-400">Video Off</p>
+                </div>
+              </div>
+            )}
             {!remoteStream && (
               <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
                 <div className="text-center">
