@@ -39,11 +39,9 @@ const VideoRoom = () => {
       iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
         { urls: 'stun:stun1.l.google.com:19302' },
-        {
-          urls: 'turn:vercel.metered.live:443', 
-          username: 'Shubham',
-          credential: import.meta.env.TURN_SECRET_KEY
-        }
+        { urls: 'turn:openrelay.metered.ca:80' },
+        { urls: 'turn:openrelay.metered.ca:443' },
+        { urls: 'turn:openrelay.metered.ca:443?transport=tcp' }
       ]
     });
 
