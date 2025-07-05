@@ -38,7 +38,12 @@ const VideoRoom = () => {
     const pc = new RTCPeerConnection({
       iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' }
+        { urls: 'stun:stun1.l.google.com:19302' },
+        {
+          urls: 'turn:vercel.metered.live:443', 
+          username: 'Shubham',
+          credential: import.meta.env.TURN_SECRET_KEY
+        }
       ]
     });
 
