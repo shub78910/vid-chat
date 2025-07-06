@@ -17,6 +17,7 @@ const VideoRoom = () => {
   const navigate = useNavigate();
   
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+  const localStreamRef = useRef<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
@@ -182,6 +183,7 @@ const VideoRoom = () => {
         audio: true
       });
       setLocalStream(stream);
+      localStreamRef.current = stream;
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
       }
@@ -235,11 +237,17 @@ const VideoRoom = () => {
     }
   };
 
+  // Helper to stop local media stream
+  const stopLocalStream = () => {
+    if (localStreamRef.current) {
+      localStreamRef.current.getTracks().forEach(track => track.stop());
+      localStreamRef.current = null;
+    }
+  };
+
   // End call
   const endCall = () => {
-    if (localStream) {
-      localStream.getTracks().forEach(track => track.stop());
-    }
+    stopLocalStream();
     if (peerConnectionRef.current) {
       peerConnectionRef.current.close();
     }
@@ -269,9 +277,7 @@ const VideoRoom = () => {
 
     // Cleanup on unmount
     return () => {
-      if (localStream) {
-        localStream.getTracks().forEach(track => track.stop());
-      }
+      stopLocalStream();
       if (peerConnectionRef.current) {
         peerConnectionRef.current.close();
       }
@@ -326,7 +332,7 @@ const VideoRoom = () => {
             <h2 className="text-2xl font-bold mb-2 text-gray-800">Call Ended</h2>
             <p className="text-gray-600 mb-6">The other user has left or the connection was lost.</p>
             <button
-              onClick={() => navigate('/')}
+              onClick={() => { stopLocalStream(); navigate('/'); }}
               className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
             >
               Return to Home
