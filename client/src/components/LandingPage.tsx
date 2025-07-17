@@ -23,7 +23,7 @@ const LandingPage = () => {
   return (
     <>
       {showDemoNotice && (
-        <div className="flex z-50 justify-between items-center px-4 py-2 w-full text-yellow-900 bg-yellow-100 border-b border-yellow-300">
+        <div className="flex z-50 flex-wrap gap-4 justify-center items-center px-4 py-2 w-full text-yellow-900 bg-yellow-100 border-b border-yellow-300 lg:justify-between">
           <span>
             ⚠️ <b>Demo Mode:</b> For best results, open this app in two tabs or
             devices on the same WiFi network (Maybe use a phone and a laptop,
@@ -34,14 +34,14 @@ const LandingPage = () => {
           </span>
           <button
             onClick={() => setShowDemoNotice(false)}
-            className="px-3 py-1 ml-4 bg-yellow-200 rounded hover:bg-yellow-300"
+            className="px-2 py-1 text-xs font-semibold text-yellow-900 whitespace-nowrap bg-yellow-300 rounded transition-colors sm:ml-2 hover:bg-yellow-400"
           >
             Dismiss
           </button>
         </div>
       )}
       <div className="flex flex-col justify-center items-center min-h-screen bg-gray-900 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <div className="p-8 mx-4 w-full max-w-md bg-gradient-to-br from-gray-800 via-gray-900 to-gray-900 rounded-2xl border border-gray-700 shadow-2xl backdrop-blur-lg bg-gray-800/90">
+        <div className="p-8 mx-4 w-full max-w-md bg-gradient-to-br from-gray-800 via-gray-900 to-gray-900 rounded-none border border-gray-700 shadow-2xl backdrop-blur-lg lg:rounded-2xl bg-gray-800/90">
           <div className="mb-8 text-center">
             <h1 className="mb-2 text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-400 via-cyan-400 to-gray-700">
               VC

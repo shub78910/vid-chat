@@ -94,17 +94,17 @@ const VideoRoom = () => {
       )}
 
       {/* Header */}
-      <div className="flex justify-between items-center p-4 bg-gray-800">
-        <div className="flex items-center space-x-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 bg-gray-800 gap-2 sm:gap-0">
+        <div className="flex flex-col sm:flex-row sm:items-center w-full sm:w-auto gap-2 sm:gap-4">
           <button
-            onClick={() => navigate("/")}
-            className="text-gray-400 transition-colors hover:text-white"
+            onClick={() => navigate('/')}
+            className="text-gray-400 transition-colors hover:text-white w-max"
           >
             ← Back
           </button>
-          <h1 className="text-xl font-semibold text-white">Room: {roomId}</h1>
-          <div className="flex items-center px-2 py-1 ml-4 bg-gray-700 rounded">
-            <span className="mr-2 text-xs text-blue-200 select-all">
+          <h1 className="text-base sm:text-xl font-semibold text-white break-all">Room: {roomId}</h1>
+          <div className="flex items-center px-2 py-1 bg-gray-700 rounded w-full sm:w-auto">
+            <span className="mr-2 text-xs text-blue-200 select-all truncate max-w-[120px] sm:max-w-xs">
               {window.location.href}
             </span>
             <button
@@ -115,39 +115,17 @@ const VideoRoom = () => {
               {copied ? (
                 <span className="text-xs text-green-400">Copied!</span>
               ) : (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <rect
-                    x="9"
-                    y="9"
-                    width="13"
-                    height="13"
-                    rx="2"
-                    strokeWidth="2"
-                  />
-                  <rect
-                    x="3"
-                    y="3"
-                    width="13"
-                    height="13"
-                    rx="2"
-                    strokeWidth="2"
-                  />
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <rect x="9" y="9" width="13" height="13" rx="2" strokeWidth="2"/>
+                  <rect x="3" y="3" width="13" height="13" rx="2" strokeWidth="2"/>
                 </svg>
               )}
             </button>
           </div>
         </div>
-        <ConnectionStatus
-          isConnected={isConnected}
-          isConnecting={isConnecting}
-        />
+        <div className="mt-2 sm:mt-0">
+          <ConnectionStatus isConnected={isConnected} isConnecting={isConnecting} />
+        </div>
       </div>
 
       {/* Error Display */}
