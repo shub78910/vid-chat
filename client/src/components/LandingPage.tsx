@@ -1,8 +1,10 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const LandingPage = () => {
-  const [joinRoomId, setJoinRoomId] = useState('');
+  const [joinRoomId, setJoinRoomId] = useState("");
+  const [showDemoNotice, setShowDemoNotice] = useState(true);
+  const [roomName, setRoomName] = useState('');
   const navigate = useNavigate();
 
   // Start a new room with a random ID
@@ -19,55 +21,83 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-300 via-[#b5c99a] to-red-200">
-      <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-8 w-full max-w-md mx-4 shadow-xl">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-500 via-[#b5c99a] to-red-400 bg-clip-text text-transparent">
-            Video Chat
-          </h1>
-          <p className="text-blue-800">Private, secure, peer-to-peer video calls</p>
+    <>
+      {showDemoNotice && (
+        <div className="flex z-50 justify-between items-center px-4 py-2 w-full text-yellow-900 bg-yellow-100 border-b border-yellow-300">
+          <span>
+            ⚠️ <b>Demo Mode:</b> For best results, open this app in two tabs or
+            devices on the same WiFi network (Maybe use a phone and a laptop,
+            both on the same network).
+            <br />
+            Cross-network video may not work due to free TURN server
+            limitations.
+          </span>
+          <button
+            onClick={() => setShowDemoNotice(false)}
+            className="px-3 py-1 ml-4 bg-yellow-200 rounded hover:bg-yellow-300"
+          >
+            Dismiss
+          </button>
         </div>
-
-        <div className="space-y-6">
-          {/* Start Call Section */}
-          <div className="bg-blue-100 rounded-lg p-6">
-            <h2 className="text-xl font-semibold mb-4 text-blue-800">Start a New Room</h2>
-            <button
-              onClick={startCall}
-              className="w-full py-3 bg-blue-500 hover:bg-blue-600 rounded-lg text-white font-semibold transition-colors shadow"
-            >
-              Start New Room
-            </button>
+      )}
+      <div className="flex flex-col justify-center items-center min-h-screen bg-gray-900 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <div className="p-8 mx-4 w-full max-w-md bg-gradient-to-br from-gray-800 via-gray-900 to-gray-900 rounded-2xl border border-gray-700 shadow-2xl backdrop-blur-lg bg-gray-800/90">
+          <div className="mb-8 text-center">
+            <h1 className="mb-2 text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-400 via-cyan-400 to-gray-700">
+              VC
+            </h1>
+            <p className="text-white">
+              Private, secure, peer-to-peer video calls
+            </p>
           </div>
 
-          {/* Join Call Section */}
-          <div className="bg-[#e6f0d5] rounded-lg p-6">
-            <h2 className="text-xl font-semibold mb-4 text-[#6b7a4c]">Join a Room</h2>
-            <div className="space-y-3">
+          <div className="space-y-6">
+            {/* Start a New Room Section */}
+            <div className="p-6 mb-6 rounded-2xl border border-gray-700 shadow-lg bg-gray-800/90">
+              <h2 className="mb-4 text-base font-bold text-gray-300">Start a New Room</h2>
               <input
+                id="roomName"
                 type="text"
-                value={joinRoomId}
-                onChange={(e) => setJoinRoomId(e.target.value)}
-                placeholder="Enter Room ID"
-                className="w-full px-3 py-2 bg-white border border-blue-300 rounded-lg text-blue-800 placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="px-4 py-2 mb-4 w-full placeholder-gray-400 text-gray-200 bg-gray-900 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                value={roomName}
+                onChange={e => setRoomName(e.target.value)}
+                placeholder="Enter a room name to start a call"
               />
               <button
+                className="py-3 w-full text-base font-semibold text-white bg-gray-800 rounded-lg border transition-colors hover:bg-gray-600"
+                onClick={startCall}
+              >
+                Start New Room
+              </button>
+            </div>
+
+            {/* Join a Room Section */}
+            <div className="p-6 mb-8 rounded-xl border border-gray-700 shadow-lg bg-gray-800/90">
+              <h2 className="mb-4 text-base font-bold text-cyan-300">Join a Room</h2>
+              <input
+                id="joinRoomId"
+                type="text"
+                className="px-4 py-2 mb-4 w-full placeholder-cyan-400 text-cyan-200 bg-gray-900 rounded-lg border border-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                value={joinRoomId}
+                onChange={e => setJoinRoomId(e.target.value)}
+                placeholder="Enter a room ID to join a call"
+              />
+              <button
+                className="py-3 w-full text-base font-semibold text-white bg-cyan-900 rounded-lg transition-colors hover:bg-cyan-700"
                 onClick={joinCall}
-                disabled={!joinRoomId.trim()}
-                className="w-full py-3 bg-[#b5c99a] hover:bg-[#a3b97c] disabled:bg-gray-300 disabled:cursor-not-allowed rounded-lg text-[#38451c] font-semibold transition-colors shadow"
               >
                 Join Room
               </button>
             </div>
           </div>
-        </div>
 
-        <div className="mt-8 text-center text-sm text-blue-700">
-          <p>Share the room URL with your friend to start chatting!</p>
+          <div className="mt-8 text-sm text-center text-gray-100">
+            <p>Share the room URL with your friend to start chatting!</p>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
-export default LandingPage; 
+export default LandingPage;

@@ -31,7 +31,6 @@ wss.on("connection", (ws) => {
     if (data.type === "join" && typeof data.roomId === "string") {
       roomId = data.roomId;
       const clients = getRoomClients(roomId);
-      console.log({clients, ws});
       
       // Send room size before adding the new client
       ws.send(
