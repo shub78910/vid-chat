@@ -4,6 +4,7 @@ interface VideoControlsProps {
   onToggleAudio: () => void;
   onToggleVideo: () => void;
   onEndCall: () => void;
+  onSwitchCamera?: () => void;
 }
 
 const VideoControls = ({
@@ -11,17 +12,18 @@ const VideoControls = ({
   isVideoOff,
   onToggleAudio,
   onToggleVideo,
-  onEndCall
+  onEndCall,
+  onSwitchCamera
 }: VideoControlsProps) => {
   return (
-    <div className="bg-gray-800 p-6 flex items-center justify-center space-x-4">
+    <div className="flex justify-center items-center p-6 space-x-4 bg-gray-800">
       {/* Audio Toggle */}
       <button
         onClick={onToggleAudio}
         className={`p-4 rounded-full transition-colors ${
           isMuted 
-            ? 'bg-red-600 hover:bg-red-700 text-white' 
-            : 'bg-gray-600 hover:bg-gray-700 text-white'
+            ? 'text-white bg-red-600 hover:bg-red-700' 
+            : 'text-white bg-gray-600 hover:bg-gray-700'
         }`}
         title={isMuted ? 'Unmute' : 'Mute'}
       >
@@ -42,8 +44,8 @@ const VideoControls = ({
         onClick={onToggleVideo}
         className={`p-4 rounded-full transition-colors ${
           isVideoOff 
-            ? 'bg-red-600 hover:bg-red-700 text-white' 
-            : 'bg-gray-600 hover:bg-gray-700 text-white'
+            ? 'text-white bg-red-600 hover:bg-red-700' 
+            : 'text-white bg-gray-600 hover:bg-gray-700'
         }`}
         title={isVideoOff ? 'Turn on camera' : 'Turn off camera'}
       >
@@ -58,10 +60,25 @@ const VideoControls = ({
         )}
       </button>
 
+      {/* Switch Camera */}
+      {onSwitchCamera && (
+        <button
+          onClick={onSwitchCamera}
+          className="p-4 text-white bg-gray-600 rounded-full transition-colors hover:bg-blue-700"
+          title="Switch camera"
+        >
+          {/* Camera switch icon */}
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M9 10l-4.553-2.276A1 1 0 003 8.618v6.764a1 1 0 001.447.894L9 14" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m0-2V7m0 10a5 5 0 100-10 5 5 0 000 10z" />
+          </svg>
+        </button>
+      )}
+
       {/* End Call */}
       <button
         onClick={onEndCall}
-        className="p-4 bg-red-600 hover:bg-red-700 text-white rounded-full transition-colors"
+        className="p-4 text-white bg-red-600 rounded-full transition-colors hover:bg-red-700"
         title="End call"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

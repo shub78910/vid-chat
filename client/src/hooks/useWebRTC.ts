@@ -26,7 +26,7 @@ export function useWebRTC(
   roomId: string | undefined,
   localStream: MediaStream | null,
   navigate: (path: string) => void
-): UseWebRTCResult {
+): UseWebRTCResult & { replaceVideoTrack: (track: MediaStreamTrack) => void } {
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
@@ -207,6 +207,15 @@ export function useWebRTC(
     navigate('/');
   };
 
+  // Replace the video track in the peer connection
+  const replaceVideoTrack = (newTrack: MediaStreamTrack) => {
+    const pc = peerConnectionRef.current;
+    if (pc && pc.getSenders) {
+      const sender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
+      if (sender) sender.replaceTrack(newTrack);
+    }
+  };
+
   // Initialize everything when localStream changes
   useEffect(() => {
     if (!localStream) return;
@@ -243,5 +252,6 @@ export function useWebRTC(
     endCall,
     hasReceivedOffer,
     setHasReceivedOffer,
+    replaceVideoTrack,
   };
 } 

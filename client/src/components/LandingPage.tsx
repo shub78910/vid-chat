@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+// import BouncingBall from "./BouncingBall";
 
 const LandingPage = () => {
   const [joinRoomId, setJoinRoomId] = useState("");
-  const [showDemoNotice, setShowDemoNotice] = useState(true);
+  const [showDemoNotice, setShowDemoNotice] = useState(false);
   const [roomName, setRoomName] = useState('');
   const navigate = useNavigate();
 
@@ -40,6 +41,7 @@ const LandingPage = () => {
           </button>
         </div>
       )}
+      {/* <BouncingBall /> */}
       <div className="flex flex-col justify-center items-center min-h-screen bg-gray-900 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <div className="p-8 mx-4 w-full max-w-md bg-gradient-to-br from-gray-800 via-gray-900 to-gray-900 rounded-none border border-gray-700 shadow-2xl backdrop-blur-lg lg:rounded-2xl bg-gray-800/90">
           <div className="mb-8 text-center">

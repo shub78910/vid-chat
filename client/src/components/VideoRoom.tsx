@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import VideoControls from "./VideoControls";
@@ -12,6 +13,7 @@ const VideoRoom = () => {
   const navigate = useNavigate();
 
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
   const [copied, setCopied] = useState(false);
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
@@ -29,12 +31,13 @@ const VideoRoom = () => {
     callEnded,
     setError,
     endCall,
+    replaceVideoTrack,
   } = useWebRTC(roomId, localStream, navigate);
 
-  const initializeLocalStream = async () => {
+  const initializeLocalStream = async (mode = 'user') => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
+        video: { facingMode: mode },
         audio: true,
       });
       setLocalStream(stream);
@@ -45,6 +48,30 @@ const VideoRoom = () => {
     } catch {
       setError("Failed to access camera/microphone. Please check permissions.");
       return null;
+    }
+  };
+
+  // Toggle camera between front and back
+  const toggleCamera = async () => {
+    const newMode = facingMode === 'user' ? 'environment' : 'user';
+    setFacingMode(newMode);
+    const newStream = await initializeLocalStream(newMode);
+    if (!newStream || !localStream) return;
+    // Replace the video track in the local stream and peer connection
+    const newVideoTrack = newStream.getVideoTracks()[0];
+    const oldVideoTrack = localStream.getVideoTracks()[0];
+    if (oldVideoTrack) {
+      // Replace in local stream
+      localStream.removeTrack(oldVideoTrack);
+      localStream.addTrack(newVideoTrack);
+      // Replace in peer connection using the hook's function
+      if (newVideoTrack) {
+        replaceVideoTrack(newVideoTrack);
+      }
+    }
+    setLocalStream(newStream);
+    if (localVideoRef.current) {
+      localVideoRef.current.srcObject = newStream;
     }
   };
 
@@ -94,16 +121,16 @@ const VideoRoom = () => {
       )}
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 bg-gray-800 gap-2 sm:gap-0">
-        <div className="flex flex-col sm:flex-row sm:items-center w-full sm:w-auto gap-2 sm:gap-4">
+      <div className="flex flex-col gap-2 p-4 bg-gray-800 sm:flex-row sm:justify-between sm:items-center sm:gap-0">
+        <div className="flex flex-col gap-2 w-full sm:flex-row sm:items-center sm:w-auto sm:gap-4">
           <button
             onClick={() => navigate('/')}
-            className="text-gray-400 transition-colors hover:text-white w-max"
+            className="w-max text-gray-400 transition-colors hover:text-white"
           >
             ← Back
           </button>
-          <h1 className="text-base sm:text-xl font-semibold text-white break-all">Room: {roomId}</h1>
-          <div className="flex items-center px-2 py-1 bg-gray-700 rounded w-full sm:w-auto">
+          <h1 className="text-base font-semibold text-white break-all sm:text-xl">Room: {roomId}</h1>
+          <div className="flex items-center px-2 py-1 w-full bg-gray-700 rounded sm:w-auto">
             <span className="mr-2 text-xs text-blue-200 select-all truncate max-w-[120px] sm:max-w-xs">
               {window.location.href}
             </span>
@@ -196,6 +223,7 @@ const VideoRoom = () => {
         onToggleAudio={toggleAudio}
         onToggleVideo={toggleVideo}
         onEndCall={endCall}
+        onSwitchCamera={toggleCamera}
       />
     </div>
   );
